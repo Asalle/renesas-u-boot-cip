@@ -63,6 +63,7 @@
 	"fdtfile="CONFIG_DEFAULT_FDT_FILE"\0" \
 	"kernel_addr_r=0x48080000\0" \
 	"boot_efi_binary=efi/boot/bootaa64.efi\0" \
+  "setenv platform_part 1;" \
 	"scan_for_usb_dev=" \
 		"usb start; " \
 		"if test ! -e usb ${devnum}:1 /; then usb reset; fi;\0" \
@@ -73,8 +74,11 @@
 			"if test -e ${devtype} ${devnum}:${distro_bootpart} ${boot_efi_binary}; then " \
 				"load ${devtype} ${devnum}:${distro_bootpart} " \
 				"${kernel_addr_r} ${boot_efi_binary};"          \
-				"echo BootEFI from <${devtype}> [${devnum}:${distro_bootpart}]; "\
-				"bootefi ${kernel_addr_r};"                     \
+        "load ${devtype} ${devnum}:${platform_part} " \
+        "${fdt_addr_r} ${fdtfile};" \
+				"echo BootEFI from <${devtype}> [${devnum}:${distro_bootpart}] "\
+        "dtb from <${devtype}> [${devnum}:${platform_part}] ${fdtfile};" \
+				"bootefi ${kernel_addr_r} ${fdt_addr_r};"                     \
 			"fi;" \
 		"done;\0" \
 	"mmc0=" \
